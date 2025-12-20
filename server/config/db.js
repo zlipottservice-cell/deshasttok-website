@@ -8,8 +8,6 @@ dotenv.config();
 // We avoid using the general 'PORT' variable on Railway as it belongs to the Web Server.
 const dbPort = process.env.DB_PORT || 3306;
 
-console.log(`📡 Database Config: Host=${process.env.DB_HOST}, Port=${dbPort}, User=${process.env.DB_USER}, DB=${process.env.DB_NAME}`);
-
 const pool = mysql.createPool({
     host: process.env.DB_HOST || 'localhost',
     port: parseInt(dbPort),
@@ -27,14 +25,7 @@ const pool = mysql.createPool({
 // Test connection
 pool.getConnection((err, connection) => {
     if (err) {
-        console.error('❌ DATABASE CONNECTION FAILED');
-        console.error('--------------------------------');
-        console.error('Error Code:', err.code);
-        console.error('Error Message:', err.message);
-        console.error('Error No:', err.errno);
-        console.error('--------------------------------');
-        console.log('TIP: Ensure DB_HOST and DB_PORT (21588) are correct in Railway Variables.');
-        console.log('TIP: Ensure Aiven Firewall (IP Whitelist) is set to 0.0.0.0/0.');
+        console.error('❌ DATABASE CONNECTION FAILED:', err.message);
     } else {
         console.log('✅ DATABASE CONNECTED SUCCESSFULLY (Aiven MySQL)');
         connection.release();
