@@ -1,92 +1,78 @@
 import React, { useState } from 'react';
 
-const QuestionCard = ({ question, index, onAnswer }) => {
+const QuestionCard = ({ question, index, onAnswer, isGlass }) => {
     const [selectedOption, setSelectedOption] = useState(null);
     const [showExplanation, setShowExplanation] = useState(false);
 
     const handleOptionClick = (optionKey) => {
-        if (selectedOption) return; // Prevent changing answer
+        if (selectedOption) return;
         setSelectedOption(optionKey);
         setShowExplanation(true);
-        if (onAnswer) {
-            onAnswer(optionKey === question.correct_option);
-        }
-    };
-
-    const getOptionClass = (optionKey) => {
-        if (!selectedOption) return "bg-gray-50 border-gray-200 hover:bg-indigo-50 hover:border-indigo-300";
-
-        if (optionKey === question.correct_option) {
-            return "bg-green-100 border-green-500 text-green-700";
-        }
-
-        if (selectedOption === optionKey && selectedOption !== question.correct_option) {
-            return "bg-red-100 border-red-500 text-red-700";
-        }
-
-        return "bg-gray-50 border-gray-200 opacity-50";
+        if (onAnswer) onAnswer(optionKey === question.correct_option);
     };
 
     return (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
-            <div className="flex items-start gap-4 mb-4">
-                <span className="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-indigo-100 text-indigo-700 font-bold rounded-full">
-                    {index + 1}
-                </span>
-                <div className="flex-1">
-                    <p className="text-lg font-medium text-gray-900 mb-2">{question.question_text}</p>
-
-                    {question.question_image && (
-                        <div className="mb-4 rounded-lg overflow-hidden border border-gray-200">
-                            <img src={question.question_image} alt="Question" className="max-w-full h-auto" />
-                        </div>
-                    )}
+        <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <div className="space-y-8">
+                <div className="flex items-start gap-8">
+                    <span className="flex-shrink-0 w-14 h-14 flex items-center justify-center bg-indigo-500/10 text-indigo-500 font-black rounded-2xl border border-indigo-500/20 text-2xl">
+                        {index + 1}
+                    </span>
+                    <p className="text-3xl md:text-4xl font-black text-white leading-tight tracking-tight">
+                        {question.question_text}
+                    </p>
                 </div>
+
+                {question.question_image_url && (
+                    <div className="rounded-[2rem] overflow-hidden border border-slate-800 shadow-2xl bg-slate-950 p-3">
+                        <img src={question.question_image_url} alt="Question Context" className="w-full rounded-[1.5rem]" />
+                    </div>
+                )}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ml-0 md:ml-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 {['A', 'B', 'C', 'D'].map((key) => {
-                    const optionText = question[`option_${key.toLowerCase()}`];
-                    const optionImage = question[`option_${key.toLowerCase()}_image`];
+                    const isCorrect = key === question.correct_option;
+                    const isSelected = selectedOption === key;
+
+                    let style = "bg-slate-950/50 border-slate-800 text-slate-400 hover:border-slate-700 hover:bg-slate-900";
+                    if (selectedOption) {
+                        if (isCorrect) style = "bg-emerald-500/10 border-emerald-500/50 text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.1)]";
+                        else if (isSelected) style = "bg-red-500/10 border-red-500/50 text-red-400 shadow-[0_0_20px_rgba(239,68,68,0.1)]";
+                        else style = "bg-slate-950/20 border-slate-900 opacity-40 grayscale";
+                    }
+
                     return (
                         <div
                             key={key}
                             onClick={() => handleOptionClick(key)}
-                            className={`p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 ${getOptionClass(key)}`}
+                            className={`p-6 border-2 rounded-2xl cursor-pointer transition-all duration-300 flex items-center gap-6 group/opt ${style}`}
                         >
-                            <div className="flex items-start gap-3">
-                                <span className="font-semibold flex-shrink-0">{key}.</span>
-                                <div className="flex-1">
-                                    {optionText && <span className="block mb-2">{optionText}</span>}
-                                    {optionImage && (
-                                        <img
-                                            src={optionImage}
-                                            alt={`Option ${key}`}
-                                            className="max-w-full h-auto rounded border border-gray-300"
-                                        />
-                                    )}
-                                </div>
-                            </div>
+                            <span className={`w-12 h-12 rounded-xl flex items-center justify-center font-black text-xl transition-all ${isSelected || (selectedOption && isCorrect) ? 'bg-white/10' : 'bg-slate-900 group-hover/opt:bg-slate-800'}`}>
+                                {key}
+                            </span>
+                            <span className="font-bold text-lg tracking-wide">{question[`option_${key.toLowerCase()}`]}</span>
                         </div>
                     );
                 })}
             </div>
 
             {showExplanation && (
-                <div className="ml-0 md:ml-12 mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                    <h4 className="font-semibold text-blue-900 mb-2">Explanation:</h4>
-                    <p className="text-blue-800 mb-2">
-                        {question.explanation || `The correct answer is Option ${question.correct_option}.`}
-                    </p>
-                    {question.explanation_image && (
-                        <div className="mt-3 rounded-lg overflow-hidden border border-blue-300">
-                            <img
-                                src={question.explanation_image}
-                                alt="Explanation"
-                                className="max-w-full h-auto"
-                            />
+                <div className="bg-slate-950 border border-slate-800 rounded-[2rem] p-10 md:p-14 space-y-8 animate-in zoom-in-95 duration-500 shadow-2xl">
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-emerald-500/10 rounded-xl flex items-center justify-center border border-emerald-500/20">
+                            <span className="text-emerald-400 font-black text-xl">✓</span>
                         </div>
-                    )}
+                        <div>
+                            <h4 className="text-xl font-black text-white tracking-widest uppercase">Expert Analysis</h4>
+                            <p className="text-xs font-bold text-emerald-500/60 uppercase tracking-widest">Correct Solution Verified</p>
+                        </div>
+                    </div>
+                    <div className="p-8 bg-slate-900/50 rounded-2xl border border-slate-800">
+                        <p className="text-slate-300 text-xl leading-relaxed font-medium italic">
+                            {question.explanation || `Strategic Analysis: The optimal response corresponds to Option ${question.correct_option}. Review the core principles governing this module for deeper understanding.`}
+                        </p>
+                    </div>
                 </div>
             )}
         </div>

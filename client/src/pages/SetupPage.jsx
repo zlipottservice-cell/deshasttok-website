@@ -106,147 +106,146 @@ const SetupPage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 flex flex-col">
-            <Header />
-            <main className="flex-1 max-w-3xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-10">
+        <div className="min-h-screen p-6 md:p-12">
+            <div className="max-w-4xl mx-auto space-y-10">
                 <button
                     onClick={() => navigate('/')}
-                    className="mb-6 flex items-center text-gray-500 hover:text-indigo-600 font-medium transition-colors"
+                    className="flex items-center gap-3 text-slate-500 hover:text-white transition-all font-black uppercase tracking-[0.2em] text-xs group"
                 >
-                    <ArrowLeft className="h-4 w-4 mr-1" />
-                    Back to Home
+                    <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
+                    Return to Dashboard
                 </button>
 
-                <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-                    <div className="bg-indigo-600 px-8 py-6 text-white">
-                        <div className="flex items-center gap-2 mb-1 opacity-90 text-indigo-100 uppercase tracking-wide text-xs font-bold">
-                            Setup Practice
+                <div className="pro-card p-10 md:p-16 space-y-16">
+                    <header className="space-y-6">
+                        <div className="flex items-center gap-5 text-indigo-500">
+                            <div className="p-4 bg-indigo-500/10 rounded-2xl border border-indigo-500/20">
+                                <Settings size={32} />
+                            </div>
+                            <div>
+                                <h2 className="text-4xl font-black text-white tracking-tight">Configuration</h2>
+                                <p className="text-slate-500 font-bold uppercase tracking-widest text-sm">
+                                    {type}: {value}
+                                </p>
+                            </div>
                         </div>
-                        <h1 className="text-3xl font-bold flex items-center gap-3">
-                            {type === 'exam' ? <BookOpen /> : <Layers />}
-                            {type === 'exam' ? `${value} Practice` : `Class ${value} Practice`}
-                        </h1>
+                    </header>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                        <div className="space-y-12">
+                            <OptionGroup
+                                label="Difficulty"
+                                options={['Easy', 'Medium', 'Hard']}
+                                selected={difficulty}
+                                setSelected={setDifficulty}
+                            />
+
+                            <NumberGroup
+                                label="Session Capacity"
+                                value={questionCount}
+                                setValue={setQuestionCount}
+                                min={5}
+                                max={50}
+                                step={5}
+                            />
+                        </div>
+
+                        <div className="space-y-12">
+                            <Dropdown
+                                label="Select Subject"
+                                options={subjects}
+                                selected={selectedSubject}
+                                setSelected={setSelectedSubject}
+                                placeholder="Choose a module"
+                            />
+
+                            <Dropdown
+                                label="Practice Scope"
+                                options={chapters}
+                                selected={selectedChapter}
+                                setSelected={setSelectedChapter}
+                                placeholder="All Segments"
+                            />
+                        </div>
                     </div>
 
-                    <div className="p-8 space-y-8">
-
-                        {/* Subject & Chapter Selection */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label className="text-sm font-bold text-gray-700 uppercase tracking-wide mb-3 block">
-                                    Subject
-                                </label>
-                                <select
-                                    value={selectedSubject}
-                                    onChange={(e) => setSelectedSubject(e.target.value)}
-                                    className="w-full p-3 border-2 border-gray-200 rounded-lg font-medium text-gray-700 focus:border-indigo-600 focus:outline-none transition-colors"
-                                    disabled={loading}
-                                >
-                                    {subjects.map(subj => (
-                                        <option key={subj} value={subj}>{subj}</option>
-                                    ))}
-                                    {loading && <option>Loading setup...</option>}
-                                    {!loading && subjects.length === 0 && <option>No subjects found</option>}
-                                </select>
-                            </div>
-
-                            <div>
-                                <label className="text-sm font-bold text-gray-700 uppercase tracking-wide mb-3 block">
-                                    Chapter
-                                </label>
-                                <select
-                                    value={selectedChapter}
-                                    onChange={(e) => setSelectedChapter(e.target.value)}
-                                    className="w-full p-3 border-2 border-gray-200 rounded-lg font-medium text-gray-700 focus:border-indigo-600 focus:outline-none transition-colors"
-                                    disabled={!selectedSubject || loading}
-                                >
-                                    <option value="All Chapters">All Chapters</option>
-                                    {chapters.map(chap => (
-                                        <option key={chap} value={chap}>{chap}</option>
-                                    ))}
-                                </select>
-                            </div>
-                        </div>
-
-                        {/* Difficulty Section */}
-                        <div>
-                            <label className="text-sm font-bold text-gray-700 uppercase tracking-wide mb-3 block">
-                                Difficulty Level
-                            </label>
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                                {['Easy', 'Medium', 'Hard', 'Mixed'].map((level) => (
-                                    <button
-                                        key={level}
-                                        onClick={() => setDifficulty(level)}
-                                        className={`py-3 px-4 rounded-lg font-medium border-2 transition-all ${difficulty === level
-                                            ? 'border-indigo-600 bg-indigo-50 text-indigo-700'
-                                            : 'border-gray-200 text-gray-600 hover:border-gray-300'
-                                            }`}
-                                    >
-                                        {level}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Question Count Section */}
-                        <div>
-                            <label className="text-sm font-bold text-gray-700 uppercase tracking-wide mb-3 block">
-                                Number of Questions
-                            </label>
-                            <div className="flex items-center gap-4">
-                                {[10, 20, 50, 100].map((count) => (
-                                    <button
-                                        key={count}
-                                        onClick={() => setQuestionCount(count)}
-                                        className={`h-12 w-12 rounded-full flex items-center justify-center font-bold border-2 transition-all ${questionCount === count
-                                            ? 'border-indigo-600 bg-indigo-600 text-white'
-                                            : 'border-gray-200 text-gray-600 hover:border-gray-300'
-                                            }`}
-                                    >
-                                        {count}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Time Limit Section */}
-                        <div>
-                            <label className="text-sm font-bold text-gray-700 uppercase tracking-wide mb-3 block flex items-center gap-2">
-                                <Clock className="h-4 w-4" /> Time Limit (Minutes)
-                            </label>
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                                {[0, 15, 30, 60].map((mins) => (
-                                    <button
-                                        key={mins}
-                                        onClick={() => setTimeLimit(mins)}
-                                        className={`py-3 px-4 rounded-lg font-medium border-2 transition-all ${timeLimit === mins
-                                            ? 'border-indigo-600 bg-indigo-50 text-indigo-700'
-                                            : 'border-gray-200 text-gray-600 hover:border-gray-300'
-                                            }`}
-                                    >
-                                        {mins === 0 ? 'No Limit' : `${mins} min`}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-
-
-                        {/* Action Button */}
-                        <div className="pt-6 border-t border-gray-100">
-                            <button
-                                onClick={handleStart}
-                                className="w-full py-4 bg-indigo-600 text-white rounded-xl font-bold text-lg hover:bg-indigo-700 shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2"
-                            >
-                                Start Practice Session
-                            </button>
-                        </div>
-
+                    <div className="pt-12 border-t border-slate-800">
+                        <button
+                            onClick={handleStart}
+                            className="w-full btn-primary py-6 text-xl tracking-[0.3em] uppercase"
+                        >
+                            Initialize Session
+                        </button>
                     </div>
                 </div>
-            </main>
+            </div>
         </div>
     );
 };
+
+const OptionGroup = ({ label, options, selected, setSelected }) => (
+    <div className="space-y-5">
+        <label className="block text-xs font-black text-slate-600 uppercase tracking-[0.2em]">{label}</label>
+        <div className="grid grid-cols-3 gap-3 p-2 bg-slate-950/50 rounded-2xl border border-slate-800">
+            {options.map((opt) => (
+                <button
+                    key={opt}
+                    onClick={() => setSelected(opt)}
+                    className={`py-3 rounded-xl font-bold text-sm transition-all ${selected === opt
+                            ? 'bg-indigo-600 text-white shadow-lg'
+                            : 'text-slate-500 hover:text-white'
+                        }`}
+                >
+                    {opt}
+                </button>
+            ))}
+        </div>
+    </div>
+);
+
+const NumberGroup = ({ label, value, setValue, min, max, step }) => (
+    <div className="space-y-5">
+        <label className="block text-xs font-black text-slate-600 uppercase tracking-[0.2em]">{label}</label>
+        <div className="flex items-center justify-between p-2 bg-slate-950/50 rounded-2xl border border-slate-800">
+            <button
+                onClick={() => setValue(Math.max(min, value - step))}
+                className="w-12 h-12 flex items-center justify-center text-slate-500 hover:text-white font-black text-2xl transition-colors"
+            >
+                -
+            </button>
+            <div className="text-center">
+                <span className="text-3xl font-black text-white">{value}</span>
+                <span className="block text-[10px] font-black text-slate-600 uppercase mt-1">Questions</span>
+            </div>
+            <button
+                onClick={() => setValue(Math.min(max, value + step))}
+                className="w-12 h-12 flex items-center justify-center text-slate-500 hover:text-white font-black text-2xl transition-colors"
+            >
+                +
+            </button>
+        </div>
+    </div>
+);
+
+const Dropdown = ({ label, options, selected, setSelected, placeholder }) => (
+    <div className="space-y-5">
+        <label className="block text-xs font-black text-slate-600 uppercase tracking-[0.2em]">{label}</label>
+        <div className="relative group/select">
+            <select
+                value={selected}
+                onChange={(e) => setSelected(e.target.value)}
+                className="w-full bg-slate-950/50 border border-slate-800 text-white p-5 rounded-2xl font-bold focus:ring-2 focus:ring-indigo-500/50 outline-none appearance-none cursor-pointer group-hover/select:border-slate-700 transition-all"
+            >
+                <option value="">{placeholder}</option>
+                {options.map((opt) => (
+                    <option key={opt} value={opt} className="bg-slate-900">{opt}</option>
+                ))}
+            </select>
+            <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">
+                <ArrowLeft size={16} className="rotate-[270deg]" />
+            </div>
+        </div>
+    </div>
+);
 
 export default SetupPage;

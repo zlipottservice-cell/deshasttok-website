@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
+console.log('📡 Base API URL being used:', API_URL);
 
 // Existing exports
 export const fetchQuestions = async (filters) => {

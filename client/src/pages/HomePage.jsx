@@ -1,76 +1,76 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
-import { BookOpen, GraduationCap, School } from 'lucide-react';
+import { BookOpen, GraduationCap, School, ArrowLeft } from 'lucide-react';
 
 const HomePage = () => {
     const navigate = useNavigate();
 
     const handleSelection = (type, value) => {
-        // value could be 'JEE', 'NEET', or class number like '10', '12'
         navigate('/setup', { state: { type, value } });
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 flex flex-col">
-            <Header />
-            <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-10">
-
-                <section className="text-center mb-16">
-                    <h1 className="text-4xl font-extrabold text-gray-900 sm:text-5xl">
-                        Master Your Preparation
+        <div className="min-h-screen p-6 md:p-12">
+            <div className="max-w-6xl mx-auto space-y-16">
+                <header className="text-center space-y-6 py-12">
+                    <h1 className="text-7xl md:text-9xl font-black text-white tracking-tighter text-glow-subtle">
+                        Edu<span className="text-indigo-500">In</span>
                     </h1>
-                    <p className="mt-4 text-xl text-gray-600 max-w-2xl mx-auto">
-                        Select your target exam or class to start a personalized practice session designed to boost your score.
+                    <p className="text-slate-400 text-xl font-medium max-w-xl mx-auto leading-relaxed">
+                        Professional practice platform for competitive excellence and academic mastery.
                     </p>
-                </section>
+                </header>
 
-                <div className="mb-12">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                        <GraduationCap className="h-6 w-6 text-indigo-600" />
-                        Competitive Exams
-                    </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <Section title="Competitive Track" icon={<div className="p-3 bg-indigo-500/10 rounded-2xl border border-indigo-500/20"><BookOpen className="text-indigo-400" size={28} /></div>}>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         {['JEE', 'NEET'].map((exam) => (
                             <div
                                 key={exam}
                                 onClick={() => handleSelection('exam', exam)}
-                                className="bg-white p-6 rounded-xl shadow-md border border-gray-100 hover:shadow-lg hover:border-indigo-200 cursor-pointer transition-all hover:-translate-y-1 group"
+                                className="pro-card pro-card-hover p-12 flex flex-col justify-between cursor-pointer min-h-[300px]"
                             >
-                                <div className="h-12 w-12 bg-indigo-50 rounded-lg flex items-center justify-center mb-4 group-hover:bg-indigo-600 group-hover:text-white transition-colors text-indigo-600">
-                                    <GraduationCap className="h-6 w-6" />
+                                <div>
+                                    <h3 className="text-5xl font-black text-white mb-4 tracking-tight">{exam}</h3>
+                                    <p className="text-slate-500 text-xl">Comprehensive preparation modules for {exam} aspirants.</p>
                                 </div>
-                                <h3 className="text-xl font-bold text-gray-900 mb-2">{exam}</h3>
-                                <p className="text-gray-500">Comprehensive practice for {exam} aspirants.</p>
+                                <button className="mt-8 flex items-center text-indigo-400 font-bold text-xl group w-fit">
+                                    Start Session <ArrowLeft className="ml-3 rotate-180 group-hover:translate-x-2 transition-transform" />
+                                </button>
                             </div>
                         ))}
                     </div>
-                </div>
+                </Section>
 
-                <div>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                        <School className="h-6 w-6 text-indigo-600" />
-                        Explore by Class
-                    </h2>
-                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                <Section title="School Curriculum" icon={<div className="p-3 bg-emerald-500/10 rounded-2xl border border-emerald-500/20"><School className="text-emerald-400" size={28} /></div>}>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                         {[12, 11, 10, 9, 8, 7, 6, 5].map((cls) => (
                             <div
                                 key={cls}
                                 onClick={() => handleSelection('class', cls)}
-                                className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:border-indigo-200 cursor-pointer transition-all text-center group"
+                                className="pro-card pro-card-hover p-8 text-center cursor-pointer group"
                             >
-                                <div className="text-3xl font-bold text-gray-300 group-hover:text-indigo-600 mb-2 transition-colors">
+                                <div className="text-5xl font-black text-white mb-3 group-hover:text-indigo-400 transition-colors">
                                     {cls}
                                 </div>
-                                <div className="text-sm font-medium text-gray-600">Class {cls}</div>
+                                <div className="text-xs font-black text-slate-600 uppercase tracking-[0.2em]">Grade {cls}</div>
                             </div>
                         ))}
                     </div>
-                </div>
-
-            </main>
+                </Section>
+            </div>
         </div>
     );
 };
+
+const Section = ({ title, icon, children }) => (
+    <section className="space-y-8">
+        <div className="flex items-center gap-4">
+            {icon}
+            <h2 className="text-2xl font-black text-white tracking-widest uppercase">{title}</h2>
+        </div>
+        {children}
+    </section>
+);
 
 export default HomePage;
