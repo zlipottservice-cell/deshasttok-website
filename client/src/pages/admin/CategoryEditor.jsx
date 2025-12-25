@@ -10,6 +10,16 @@ const CategoryEditor = () => {
     const [editingId, setEditingId] = useState(null);
     const [editConfig, setEditConfig] = useState('');
 
+    // New category creation state
+    const [showCreateForm, setShowCreateForm] = useState(false);
+    const [newCategory, setNewCategory] = useState({
+        type: 'class',
+        value: '',
+        config: '{\n  "Subject1": "Chapter1,Chapter2",\n  "Subject2": "Chapter3,Chapter4"\n}'
+    });
+    const [createError, setCreateError] = useState('');
+    const [createSuccess, setCreateSuccess] = useState('');
+
     useEffect(() => {
         loadCategories();
     }, []);
@@ -63,6 +73,47 @@ const CategoryEditor = () => {
         }
     };
 
+    const handleCreateCategory = async () => {
+        setCreateError('');
+        setCreateSuccess('');
+
+        try {
+            // Validate inputs
+            if (!newCategory.value.trim()) {
+                setCreateError('Category value is required');
+                return;
+            }
+
+            // Validate JSON
+            JSON.parse(newCategory.config);
+
+            // Create category
+            await createCategory({
+                type: newCategory.type,
+                value: newCategory.value.trim(),
+                config: newCategory.config
+            });
+
+            setCreateSuccess(`Category "${newCategory.value}" created successfully!`);
+            setNewCategory({
+                type: 'class',
+                value: '',
+                config: '{\n  "Subject1": "Chapter1,Chapter2",\n  "Subject2": "Chapter3,Chapter4"\n}'
+            });
+            setShowCreateForm(false);
+            loadCategories();
+
+            // Clear success message after 3 seconds
+            setTimeout(() => setCreateSuccess(''), 3000);
+        } catch (error) {
+            if (error.message.includes('JSON')) {
+                setCreateError('Invalid JSON format. Please check your configuration.');
+            } else {
+                setCreateError(error.response?.data?.message || 'Failed to create category');
+            }
+        }
+    };
+
     return (
         <div className="min-h-screen bg-gray-50">
             {/* Header */}
@@ -91,6 +142,94 @@ const CategoryEditor = () => {
                         {`{"Physics": "Kinematics,Thermodynamics", "Maths": "Calculus,Algebra"}`}
                     </code>
                 </div>
+
+                {/* Success Message */}
+                {createSuccess && (
+                    <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6">
+                        <p className="text-green-800 font-medium">{createSuccess}</p>
+                    </div>
+                )}
+
+                {/* Create New Category Button */}
+                <div className="mb-6">
+                    <button
+                        onClick={() => setShowCreateForm(!showCreateForm)}
+                        className="flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium"
+                    >
+                        <Plus className="h-5 w-5" />
+                        {showCreateForm ? 'Cancel' : 'Create New Category'}
+                    </button>
+                </div>
+
+                {/* Create Category Form */}
+                {showCreateForm && (
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+                        <h3 className="text-xl font-bold text-gray-900 mb-4">Create New Category</h3>
+
+                        {createError && (
+                            <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
+                                <p className="text-red-800 text-sm">{createError}</p>
+                            </div>
+                        )}
+
+                        <div className="space-y-4">
+                            {/* Type Selection */}
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-2">
+                                    Category Type
+                                </label>
+                                <select
+                                    value={newCategory.type}
+                                    onChange={(e) => setNewCategory({ ...newCategory, type: e.target.value })}
+                                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:outline-none"
+                                >
+                                    <option value="class">Class</option>
+                                    <option value="exam">Exam</option>
+                                </select>
+                            </div>
+
+                            {/* Value Input */}
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-2">
+                                    Category Value
+                                    <span className="text-gray-500 font-normal ml-2">
+                                        (e.g., "11", "9" for class or "JEE Advanced", "CUET" for exam)
+                                    </span>
+                                </label>
+                                <input
+                                    type="text"
+                                    value={newCategory.value}
+                                    onChange={(e) => setNewCategory({ ...newCategory, value: e.target.value })}
+                                    placeholder="Enter category value"
+                                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:outline-none"
+                                />
+                            </div>
+
+                            {/* Config JSON */}
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-2">
+                                    Configuration (JSON)
+                                </label>
+                                <textarea
+                                    value={newCategory.config}
+                                    onChange={(e) => setNewCategory({ ...newCategory, config: e.target.value })}
+                                    rows={8}
+                                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:outline-none font-mono text-sm"
+                                    placeholder='{"Subject": "Chapter1,Chapter2"}'
+                                />
+                            </div>
+
+                            {/* Create Button */}
+                            <button
+                                onClick={handleCreateCategory}
+                                className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium"
+                            >
+                                <Plus className="h-5 w-5" />
+                                Create Category
+                            </button>
+                        </div>
+                    </div>
+                )}
 
                 {/* Categories List */}
                 <div className="space-y-4">

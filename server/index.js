@@ -82,6 +82,61 @@ app.get('/api/config', async (req, res) => {
     });
   }
 });
+
+// ===== DETAILED ERROR REPORTING MIDDLEWARE =====
+// Request logging middleware
+app.use((req, res, next) => {
+  console.log(`\n📥 ${new Date().toISOString()} - ${req.method} ${req.path}`);
+  if (req.method === 'POST' || req.method === 'PUT') {
+    console.log('📦 Body:', JSON.stringify(req.body, null, 2).substring(0, 500));
+  }
+  next();
+});
+
+// Global error handler - MUST be after all routes
+app.use((err, req, res, next) => {
+  console.error('\n❌ ERROR OCCURRED:');
+  console.error('Path:', req.method, req.path);
+  console.error('Error Message:', err.message);
+  console.error('Stack Trace:', err.stack);
+
+  // Multer-specific errors
+  if (err.code === 'LIMIT_FILE_SIZE') {
+    return res.status(400).json({
+      message: 'File too large',
+      error: 'Maximum file size is 5MB',
+      details: err.message
+    });
+  }
+
+  if (err.message && err.message.includes('Only image files')) {
+    return res.status(400).json({
+      message: 'Invalid file type',
+      error: err.message,
+      details: 'Only JPEG, PNG, and GIF files are allowed'
+    });
+  }
+
+  // Database errors
+  if (err.code && err.code.startsWith('ER_')) {
+    return res.status(500).json({
+      message: 'Database Error',
+      error: err.message,
+      code: err.code,
+      sqlMessage: err.sqlMessage,
+      details: 'Check server console for full error details'
+    });
+  }
+
+  // Generic error response with full details
+  res.status(err.status || 500).json({
+    message: err.message || 'Internal Server Error',
+    error: err.toString(),
+    stack: err.stack,
+    details: 'Check server console for full error details'
+  });
+});
+
 // Handle SPA routing: serve index.html for any unknown route. 
 // MUST BE AFTER API ROUTES
 app.get('*', (req, res) => {

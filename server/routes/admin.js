@@ -33,8 +33,12 @@ router.post('/login', async (req, res) => {
             user: { id: user.id, username: user.username }
         });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Server Error' });
+        console.error('❌ Admin login error:', error);
+        res.status(500).json({
+            message: 'Server Error',
+            error: error.message,
+            details: error.stack
+        });
     }
 });
 
@@ -57,8 +61,12 @@ router.post('/upload-image', requireAuth, upload.single('image'), (req, res) => 
         const imageUrl = `/uploads/${req.file.filename}`;
         res.json({ url: imageUrl });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Upload failed' });
+        console.error('❌ Image upload error:', error);
+        res.status(500).json({
+            message: 'Upload failed',
+            error: error.message,
+            details: error.stack
+        });
     }
 });
 
@@ -107,8 +115,12 @@ router.get('/questions', requireAuth, async (req, res) => {
             }
         });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Server Error' });
+        console.error('❌ Get questions error:', error);
+        res.status(500).json({
+            message: 'Server Error',
+            error: error.message,
+            details: error.stack
+        });
     }
 });
 
@@ -154,8 +166,13 @@ router.post('/questions', requireAuth, async (req, res) => {
             id: result.insertId
         });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Server Error' });
+        console.error('❌ Create question error:', error);
+        res.status(500).json({
+            message: 'Failed to create question',
+            error: error.message,
+            sqlError: error.sqlMessage,
+            details: error.stack
+        });
     }
 });
 
@@ -201,8 +218,13 @@ router.put('/questions/:id', requireAuth, async (req, res) => {
 
         res.json({ message: 'Question updated successfully' });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Server Error' });
+        console.error('❌ Update question error:', error);
+        res.status(500).json({
+            message: 'Failed to update question',
+            error: error.message,
+            sqlError: error.sqlMessage,
+            details: error.stack
+        });
     }
 });
 
@@ -213,8 +235,12 @@ router.delete('/questions/:id', requireAuth, async (req, res) => {
         await db.execute('DELETE FROM questions WHERE id = ?', [id]);
         res.json({ message: 'Question deleted successfully' });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Server Error' });
+        console.error('❌ Delete question error:', error);
+        res.status(500).json({
+            message: 'Failed to delete question',
+            error: error.message,
+            details: error.stack
+        });
     }
 });
 
@@ -224,8 +250,12 @@ router.get('/categories', requireAuth, async (req, res) => {
         const [rows] = await db.execute('SELECT * FROM categories ORDER BY type, value');
         res.json(rows);
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Server Error' });
+        console.error('❌ Get categories error:', error);
+        res.status(500).json({
+            message: 'Failed to fetch categories',
+            error: error.message,
+            details: error.stack
+        });
     }
 });
 
@@ -245,8 +275,12 @@ router.put('/categories/:id', requireAuth, async (req, res) => {
 
         res.json({ message: 'Category updated successfully' });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Server Error' });
+        console.error('❌ Update category error:', error);
+        res.status(500).json({
+            message: 'Failed to update category',
+            error: error.message,
+            details: error.stack
+        });
     }
 });
 
@@ -268,8 +302,13 @@ router.post('/categories', requireAuth, async (req, res) => {
             id: result.insertId
         });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Server Error' });
+        console.error('❌ Create category error:', error);
+        res.status(500).json({
+            message: 'Failed to create category',
+            error: error.message,
+            sqlError: error.sqlMessage,
+            details: error.stack
+        });
     }
 });
 
@@ -294,8 +333,12 @@ router.get('/stats', requireAuth, async (req, res) => {
             bySubject
         });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Server Error' });
+        console.error('❌ Get stats error:', error);
+        res.status(500).json({
+            message: 'Failed to fetch statistics',
+            error: error.message,
+            details: error.stack
+        });
     }
 });
 
@@ -338,8 +381,12 @@ router.post('/questions/bulk', requireAuth, async (req, res) => {
             errors: errors.slice(0, 10) // Return first 10 errors
         });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Server Error' });
+        console.error('❌ Bulk upload error:', error);
+        res.status(500).json({
+            message: 'Bulk upload failed',
+            error: error.message,
+            details: error.stack
+        });
     }
 });
 
